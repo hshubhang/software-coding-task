@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: str
     POSTGRES_DB: str
+
+    # Auth
+    JWT_SECRET: str = "dev-secret-change-in-production"
     
     @property
     def DATABASE_URL(self) -> str:
