@@ -34,14 +34,14 @@ interface RoiData {
 }
 
 const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
-  "hsl(220, 70%, 50%)",
+  "hsl(221, 83%, 53%)",
+  "hsl(142, 71%, 45%)",
+  "hsl(38, 92%, 50%)",
   "hsl(280, 65%, 60%)",
   "hsl(340, 75%, 55%)",
+  "hsl(190, 80%, 45%)",
+  "hsl(10, 80%, 55%)",
+  "hsl(160, 60%, 45%)",
 ];
 
 export function RoiChart({ data }: { data: RoiData }) {
@@ -50,8 +50,10 @@ export function RoiChart({ data }: { data: RoiData }) {
     .map((c) => ({
       channel: c.channel,
       roi: Number(c.mean.toFixed(2)),
-      errorLow: Number((c.mean - c.ci_lower).toFixed(2)),
-      errorHigh: Number((c.ci_upper - c.mean).toFixed(2)),
+      errorRange: [
+        Number((c.mean - c.ci_lower).toFixed(2)),
+        Number((c.ci_upper - c.mean).toFixed(2)),
+      ],
     }));
 
   const chartConfig = Object.fromEntries(
@@ -82,7 +84,7 @@ export function RoiChart({ data }: { data: RoiData }) {
                 />
               }
             />
-            <ReferenceLine y={1} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" label="Break-even" />
+            <ReferenceLine y={1} stroke="hsl(0, 0%, 45%)" strokeDasharray="3 3" label={{ value: "1x Break-even", position: "right", fontSize: 11, fill: "hsl(0, 0%, 45%)" }} />
             <Bar dataKey="roi" radius={[4, 4, 0, 0]}>
               {chartData.map((entry, i) => (
                 <Cell
@@ -90,7 +92,7 @@ export function RoiChart({ data }: { data: RoiData }) {
                   fill={entry.roi >= 1 ? "hsl(142, 71%, 45%)" : "hsl(0, 84%, 60%)"}
                 />
               ))}
-              <ErrorBar dataKey="errorHigh" direction="y" />
+              <ErrorBar dataKey="errorRange" direction="y" stroke="hsl(0, 0%, 40%)" />
             </Bar>
           </BarChart>
         </ChartContainer>

@@ -39,8 +39,8 @@ export function SpendVsContribution({ data }: { data: ContributionData }) {
     }));
 
   const chartConfig = {
-    "Spend %": { label: "Spend %", color: "hsl(var(--chart-1))" },
-    "Contribution %": { label: "Contribution %", color: "hsl(var(--chart-2))" },
+    "Spend %": { label: "Spend %", color: "hsl(221, 83%, 53%)" },
+    "Contribution %": { label: "Contribution %", color: "hsl(142, 71%, 45%)" },
   };
 
   return (
@@ -63,8 +63,8 @@ export function SpendVsContribution({ data }: { data: ContributionData }) {
               }
             />
             <Legend />
-            <Bar dataKey="Spend %" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="Contribution %" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Spend %" fill="hsl(221, 83%, 53%)" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Contribution %" fill="hsl(142, 71%, 45%)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ChartContainer>
       </CardContent>

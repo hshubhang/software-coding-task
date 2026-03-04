@@ -1,41 +1,29 @@
 import joblib
 import numpy as np
-from meridian.analysis import visualizer
-
-
-def _parse_mean(value_str: str) -> float:
-    """Parse mean value from Meridian formatted strings.
-
-    Examples:
-        '41.7% (19.8%, 66.4%)' -> 41.7
-        '$1,017,859 ($222,172, $2,424,201)' -> 1017859.0
-        '1.2 (0.3, 2.9)' -> 1.2
-    """
-    s = str(value_str).split("(")[0].strip()
-    s = s.replace("$", "").replace(",", "").replace("%", "").strip()
-    return float(s)
+from meridian.analysis import analyzer as meridian_analyzer
 
 
 def load_model(pkl_path: str):
     return joblib.load(pkl_path)
 
 
-def extract_summary(m) -> dict:
-    """Extract high-level KPIs and summary table."""
-    media_summary = visualizer.MediaSummary(m)
-    table = media_summary.summary_table()
+def _get_analyzer(m):
+    return meridian_analyzer.Analyzer(m)
 
-    posterior = table[table["distribution"] == "posterior"].copy()
+
+def extract_summary(m) -> dict:
+    """Extract high-level KPIs using Analyzer.summary_metrics()."""
+    a = _get_analyzer(m)
+    sm = a.summary_metrics()
+
     channels = list(m.input_data.media_channel.values)
     times = list(m.input_data.time.values)
     kpi = m.input_data.kpi.values[0]
     spend = m.input_data.media_spend.values[0]
 
-    all_channels_row = posterior[posterior["channel"] == "All Channels"]
-    media_driven_pct = (
-        _parse_mean(all_channels_row["% contribution"].values[0])
-        if len(all_channels_row) > 0
-        else 0.0
+    # Media-driven % from "All Channels" posterior mean
+    media_driven_pct = float(
+        sm["pct_of_contribution"].sel(channel="All Channels", metric="mean", distribution="posterior").values
     )
 
     return {
@@ -44,52 +32,50 @@ def extract_summary(m) -> dict:
         "total_spend": float(spend.sum()),
         "total_revenue": float(kpi.sum()),
         "media_driven_pct": media_driven_pct,
-        "summary_table": posterior.to_dict(orient="records"),
     }
 
 
 def extract_roi(m) -> dict:
-    """Extract ROI per channel with confidence intervals from posteriors."""
-    roi = m.inference_data.posterior["roi_m"].values  # (4, 1000, 8)
+    """Extract ROI per channel from summary_metrics()."""
+    a = _get_analyzer(m)
+    sm = a.summary_metrics()
+    roi = sm["roi"].sel(distribution="posterior")
     channels = list(m.input_data.media_channel.values)
 
-    roi_flat = roi.reshape(-1, roi.shape[-1])  # (4000, 8)
     result = []
-    for i, ch in enumerate(channels):
-        vals = roi_flat[:, i]
+    for ch in channels:
+        ch_roi = roi.sel(channel=ch)
         result.append({
             "channel": ch,
-            "mean": float(np.mean(vals)),
-            "median": float(np.median(vals)),
-            "ci_lower": float(np.percentile(vals, 5)),
-            "ci_upper": float(np.percentile(vals, 95)),
-            "std": float(np.std(vals)),
+            "mean": float(ch_roi.sel(metric="mean").values),
+            "median": float(ch_roi.sel(metric="median").values),
+            "ci_lower": float(ch_roi.sel(metric="ci_lo").values),
+            "ci_upper": float(ch_roi.sel(metric="ci_hi").values),
         })
 
     return {"channels": result}
 
 
 def extract_contribution(m) -> dict:
-    """Extract channel contribution to revenue."""
-    media_summary = visualizer.MediaSummary(m)
-    table = media_summary.summary_table()
-    posterior = table[table["distribution"] == "posterior"]
+    """Extract channel contribution using summary_metrics()."""
+    a = _get_analyzer(m)
+    sm = a.summary_metrics()
+    posterior = sm.sel(distribution="posterior", metric="mean")
+    channels = list(m.input_data.media_channel.values)
 
     contributions = []
-    for _, row in posterior.iterrows():
-        if row["channel"] == "All Channels":
-            continue
+    for ch in channels:
+        ch_data = posterior.sel(channel=ch)
         contributions.append({
-            "channel": row["channel"],
-            "incremental_revenue": _parse_mean(row["incremental outcome"]),
-            "spend": _parse_mean(row["spend"]),
-            "spend_pct": _parse_mean(row["% spend"]),
-            "contribution_pct": _parse_mean(row["% contribution"]),
-            "roi": _parse_mean(row["roi"]),
-            "cpm": _parse_mean(row["cpm"]),
+            "channel": ch,
+            "incremental_revenue": float(ch_data["incremental_outcome"].values),
+            "spend": float(ch_data["spend"].values),
+            "spend_pct": float(ch_data["pct_of_spend"].values),
+            "contribution_pct": float(ch_data["pct_of_contribution"].values),
+            "roi": float(ch_data["roi"].values),
+            "cpm": float(ch_data["cpm"].values),
         })
 
-    # Calculate baseline (non-media)
     kpi_total = float(m.input_data.kpi.values.sum())
     media_total = sum(c["incremental_revenue"] for c in contributions)
     baseline = kpi_total - media_total
@@ -102,41 +88,24 @@ def extract_contribution(m) -> dict:
 
 
 def extract_response_curves(m) -> dict:
-    """Extract response curve data points for each channel."""
-    channels = list(m.input_data.media_channel.values)
-    spend = m.input_data.media_spend.values[0]  # (74, 8)
+    """Extract response curve data using Analyzer.response_curves()."""
+    a = _get_analyzer(m)
+    multipliers = [round(x, 2) for x in np.linspace(0, 2.5, 30).tolist()]
+    rc = a.response_curves(spend_multipliers=multipliers)
 
-    # Get posterior parameters for Hill curves
-    posterior = m.inference_data.posterior
-    ec = posterior["ec_m"].values.reshape(-1, len(channels))  # (4000, 8)
-    slope = posterior["slope_m"].values.reshape(-1, len(channels))
-    beta = posterior["beta_m"].values.reshape(-1, len(channels))
+    channels = list(rc.coords["channel"].values)
+    spend_data = m.input_data.media_spend.values[0]  # (74, 8)
 
     curves = []
     for i, ch in enumerate(channels):
-        total_spend = float(spend[:, i].sum())
-        max_spend = total_spend * 2  # Plot up to 2x current spend
-
-        # Generate spend points
-        spend_points = np.linspace(0, max_spend, 50)
-
-        # Hill function: beta * (spend^slope / (ec^slope + spend^slope))
-        ec_mean = float(np.mean(ec[:, i]))
-        slope_mean = float(np.mean(slope[:, i]))
-        beta_mean = float(np.mean(beta[:, i]))
-
-        response_points = []
-        for s in spend_points:
-            if ec_mean > 0 and slope_mean > 0:
-                response = beta_mean * (s ** slope_mean) / (ec_mean ** slope_mean + s ** slope_mean)
-            else:
-                response = 0
-            response_points.append(float(response))
+        total_spend = float(spend_data[:, i].sum())
+        spend_points = [float(v) for v in rc["spend"].values[:, i]]
+        response_points = [float(v) for v in rc["incremental_outcome"].values[:, i, 0]]  # mean
 
         curves.append({
             "channel": ch,
             "current_spend": total_spend,
-            "spend_points": [float(s) for s in spend_points],
+            "spend_points": spend_points,
             "response_points": response_points,
         })
 
@@ -144,7 +113,7 @@ def extract_response_curves(m) -> dict:
 
 
 def extract_spend(m) -> dict:
-    """Extract spend and media volume over time per channel."""
+    """Extract spend over time per channel (raw input data)."""
     channels = list(m.input_data.media_channel.values)
     times = [str(t) for t in m.input_data.time.values]
     spend = m.input_data.media_spend.values[0]  # (74, 8)

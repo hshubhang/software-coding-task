@@ -31,14 +31,14 @@ interface ResponseCurvesData {
 }
 
 const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
-  "hsl(220, 70%, 50%)",
+  "hsl(221, 83%, 53%)",
+  "hsl(142, 71%, 45%)",
+  "hsl(38, 92%, 50%)",
   "hsl(280, 65%, 60%)",
   "hsl(340, 75%, 55%)",
+  "hsl(190, 80%, 45%)",
+  "hsl(10, 80%, 55%)",
+  "hsl(160, 60%, 45%)",
 ];
 
 function formatCurrency(value: number | string): string {
