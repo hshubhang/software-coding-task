@@ -13,6 +13,7 @@ import { RoiChart } from "@/components/dashboard/roi-chart";
 import { ResponseCurves } from "@/components/dashboard/response-curves";
 import { SpendVsContribution } from "@/components/dashboard/spend-vs-contribution";
 import { SummaryTable } from "@/components/dashboard/summary-table";
+import { ChatPanel } from "@/components/dashboard/chat-panel";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -130,6 +131,8 @@ export default function DashboardPage() {
           </>
         )}
       </main>
+
+      <ChatPanel />
     </div>
   );
 }

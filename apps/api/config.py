@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     # Auth
     JWT_SECRET: str = "dev-secret-change-in-production"
 
+    # LLM
+    ANTHROPIC_API_KEY: str = ""
+
     @property
     def DATABASE_URL(self) -> str:
         return f"postgresql+psycopg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
