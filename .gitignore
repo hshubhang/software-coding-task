@@ -45,5 +45,5 @@ __pycache__
 
 postgres-volume
 
-# Meridian trace files
-meridian_trace/
+# Meridian generated plots
+meridian_trace/plots/
