@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.1.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300, "stroke": null}}, "layer": [{"mark": {"type": "arc", "innerRadius": 70, "outerRadius": 150}, "encoding": {"color": {"field": "channel", "legend": {"direction": "horizontal", "labelFont": "Roboto", "labelFontSize": 12, "legendX": 130, "legendY": 320, "orient": "none", "title": null}, "scale": {"domain": ["baseline", "All Channels"], "range": ["#F9AB00", "#1967D2"]}, "type": "nominal"}, "theta": {"field": "pct_of_contribution", "stack": true, "type": "quantitative"}}}, {"mark": {"type": "text", "fill": "white", "font": "Roboto", "radius": 110, "size": 18}, "encoding": {"color": {"field": "channel", "legend": {"direction": "horizontal", "labelFont": "Roboto", "labelFontSize": 12, "legendX": 130, "legendY": 320, "orient": "none", "title": null}, "scale": {"domain": ["baseline", "All Channels"], "range": ["#F9AB00", "#1967D2"]}, "type": "nominal"}, "text": {"field": "pct_of_contribution", "format": ".0%", "type": "quantitative"}, "theta": {"field": "pct_of_contribution", "stack": true, "type": "quantitative"}}}], "data": {"name": "data-cc4445f52f8f7d8b6657bae491e523a7"}, "title": {"text": "Contribution by baseline and marketing channels", "anchor": "start", "color": "#3C4043", "font": "Google Sans Display", "fontSize": 18, "fontWeight": "normal", "offset": 10}, "width": 400, "$schema": "https://vega.github.io/schema/vega-lite/v6.1.0.json", "datasets": {"data-cc4445f52f8f7d8b6657bae491e523a7": [{"channel": "baseline", "incremental_outcome": 53509264.0, "pct_of_contribution": 0.5833157300949097}, {"channel": "All Channels", "incremental_outcome": 38223668.0, "pct_of_contribution": 0.41668424010276794}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>

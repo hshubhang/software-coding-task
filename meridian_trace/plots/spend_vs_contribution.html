@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.1.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300, "strokeOpacity": 0}, "axis": {"labelColor": "#5F6368", "labelFont": "Roboto", "labelFontSize": 12, "titleColor": "#5F6368", "titleFont": "Roboto", "titleFontSize": 12, "titleFontWeight": "normal", "titlePadding": 10}, "header": {"labelAlign": "right", "labelAngle": -45, "labelBaseline": "middle", "labelOrient": "bottom", "title": null}}, "data": {"name": "data-d51efc52fc0cb08e8fc7af5fa1e91bb0"}, "facet": {"column": {"field": "channel", "type": "nominal"}}, "spec": {"layer": [{"mark": {"type": "bar", "cornerRadiusEnd": 2, "tooltip": true}, "encoding": {"color": {"field": "label", "legend": {"columnPadding": 20, "orient": "bottom", "rowPadding": 10, "title": null}, "scale": {"domain": ["% Revenue", "% Spend", "Return on Investment"], "range": ["#669DF6", "#AECBFA", "#188038"]}, "type": "nominal"}, "tooltip": [{"field": "pct", "format": ".1%", "type": "quantitative"}], "x": {"axis": {"labels": false, "ticks": false, "title": null}, "field": "label", "scale": {"paddingOuter": 0.5}, "type": "nominal"}, "y": {"axis": {"format": "%", "tickCount": 2, "titleAlign": "left", "titleAngle": 0, "titleY": -20}, "field": "pct", "type": "quantitative"}}}, {"mark": {"type": "tick", "color": "#188038", "cornerRadius": 2, "size": 20, "thickness": 4, "tooltip": true}, "encoding": {"tooltip": [{"field": "roi", "format": ".2f", "type": "quantitative"}], "y": {"field": "roi_scaled", "title": "%", "type": "quantitative"}}}, {"mark": {"type": "text", "color": "#202124", "dy": -15, "fontSize": 12}, "encoding": {"text": {"field": "roi", "format": ".1f", "type": "quantitative"}, "y": {"field": "roi_scaled", "type": "quantitative"}}}]}, "spacing": -1, "title": {"text": "Spend and revenue contribution by marketing channel", "anchor": "start", "color": "#3C4043", "font": "Google Sans Display", "fontSize": 18, "fontWeight": "normal", "offset": 10}, "$schema": "https://vega.github.io/schema/vega-lite/v6.1.0.json", "datasets": {"data-d51efc52fc0cb08e8fc7af5fa1e91bb0": [{"channel": "meta", "pct": 0.02662903070449829, "label": "% Revenue", "roi": 1.2115117311477661, "roi_scaled": 0.1376349925994873}, {"channel": "google", "pct": 0.22514241933822632, "label": "% Revenue", "roi": 0.8356286883354187, "roi_scaled": 0.094932422041893}, {"channel": "snapchat", "pct": 0.581688404083252, "label": "% Revenue", "roi": 5.1202263832092285, "roi_scaled": 0.581688404083252}, {"channel": "tiktok", "pct": 0.046057164669036865, "label": "% Revenue", "roi": 1.0044443607330322, "roi_scaled": 0.11411089450120926}, {"channel": "moloco", "pct": 0.05646659806370735, "label": "% Revenue", "roi": 2.562654972076416, "roi_scaled": 0.29113295674324036}, {"channel": "liveintent", "pct": 0.04819614067673683, "label": "% Revenue", "roi": 2.3086001873016357, "roi_scaled": 0.26227080821990967}, {"channel": "beehiiv", "pct": 0.015079263597726822, "label": "% Revenue", "roi": 1.7563471794128418, "roi_scaled": 0.19953155517578125}, {"channel": "amazon", "pct": 0.0007413921994157135, "label": "% Revenue", "roi": 1.8003987073898315, "roi_scaled": 0.2045360803604126}, {"channel": "meta", "pct": 0.04371735081076622, "label": "% Spend", "roi": 1.2115117311477661, "roi_scaled": 0.1376349925994873}, {"channel": "google", "pct": 0.5358812808990479, "label": "% Spend", "roi": 0.8356286883354187, "roi_scaled": 0.094932422041893}, {"channel": "snapchat", "pct": 0.2259572595357895, "label": "% Spend", "roi": 5.1202263832092285, "roi_scaled": 0.581688404083252}, {"channel": "tiktok", "pct": 0.09120037406682968, "label": "% Spend", "roi": 1.0044443607330322, "roi_scaled": 0.11411089450120926}, {"channel": "moloco", "pct": 0.04382539913058281, "label": "% Spend", "roi": 2.562654972076416, "roi_scaled": 0.29113295674324036}, {"channel": "liveintent", "pct": 0.04152299091219902, "label": "% Spend", "roi": 2.3086001873016357, "roi_scaled": 0.26227080821990967}, {"channel": "beehiiv", "pct": 0.01707633212208748, "label": "% Spend", "roi": 1.7563471794128418, "roi_scaled": 0.19953155517578125}, {"channel": "amazon", "pct": 0.0008190390653908253, "label": "% Spend", "roi": 1.8003987073898315, "roi_scaled": 0.2045360803604126}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>

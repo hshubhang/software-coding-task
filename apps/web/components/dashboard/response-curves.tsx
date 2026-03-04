@@ -8,7 +8,6 @@ import {
   YAxis,
   Tooltip,
   ReferenceDot,
-  Legend,
 } from "recharts";
 import {
   Card,
@@ -42,10 +41,12 @@ const COLORS = [
   "hsl(340, 75%, 55%)",
 ];
 
-function formatCurrency(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
+function formatCurrency(value: number | string): string {
+  const v = Number(value);
+  if (isNaN(v)) return String(value);
+  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
+  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
+  return `$${v.toFixed(0)}`;
 }
 
 export function ResponseCurves({ data }: { data: ResponseCurvesData }) {
