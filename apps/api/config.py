@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings
+
+ENV_FILE = Path(__file__).resolve().parent.parent.parent / ".env.local"
 
 
 class Settings(BaseSettings):
@@ -13,13 +17,13 @@ class Settings(BaseSettings):
 
     # Auth
     JWT_SECRET: str = "dev-secret-change-in-production"
-    
+
     @property
     def DATABASE_URL(self) -> str:
         return f"postgresql+psycopg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     model_config = {
-        "env_file": "../../.env.local",
+        "env_file": str(ENV_FILE),
         "extra": "ignore"
     }
 
