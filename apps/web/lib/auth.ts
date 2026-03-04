@@ -23,7 +23,7 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
     headers["Authorization"] = `Bearer ${token}`;
   }
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
-  if (res.status === 401) {
+  if (res.status === 401 && !path.startsWith("/api/auth")) {
     removeToken();
     window.location.href = "/login";
     throw new Error("Unauthorized");

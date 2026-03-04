@@ -35,7 +35,14 @@ export default function LoginPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.detail || "Login failed");
+        const detail = data.detail;
+        if (typeof detail === "string") {
+          setError(detail);
+        } else if (Array.isArray(detail)) {
+          setError(detail.map((e: { msg: string }) => e.msg).join(", "));
+        } else {
+          setError("Login failed");
+        }
         return;
       }
 

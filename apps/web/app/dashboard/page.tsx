@@ -4,9 +4,10 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
 import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { Separator } from "@workspace/ui/components/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import { HeroSection } from "@/components/dashboard/hero-section";
 import { ContributionChart } from "@/components/dashboard/contribution-chart";
 import { RoiChart } from "@/components/dashboard/roi-chart";
@@ -17,7 +18,7 @@ import { ChatPanel } from "@/components/dashboard/chat-panel";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading, logout } = useAuth();
+  const { isAuthenticated, email, loading: authLoading, logout } = useAuth();
 
   const { data: summary, loading: summaryLoading } = useDashboardData<{
     total_spend: number;
@@ -86,13 +87,25 @@ export default function DashboardPage() {
               Meridian Marketing Mix Model Analysis
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={logout}>
-            Sign out
-          </Button>
+          <div className="flex items-center gap-3">
+            {email && (
+              <>
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="text-xs">
+                    {email.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm text-muted-foreground">{email}</span>
+              </>
+            )}
+            <Button variant="outline" size="sm" onClick={logout}>
+              Sign out
+            </Button>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-6 py-8">
         {dataLoading ? (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -101,33 +114,38 @@ export default function DashboardPage() {
               ))}
             </div>
             <Skeleton className="h-[400px]" />
-            <Skeleton className="h-[400px]" />
           </div>
         ) : (
           <>
-            {/* Hero KPIs */}
             {summary && <HeroSection data={summary} />}
 
-            <Separator />
+            <Tabs defaultValue="overview" className="mt-8">
+              <TabsList>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="channels">Channel Analysis</TabsTrigger>
+                <TabsTrigger value="curves">Response Curves</TabsTrigger>
+                <TabsTrigger value="details">Details</TabsTrigger>
+              </TabsList>
 
-            {/* Contribution Chart - Required */}
-            {contribution && <ContributionChart data={contribution} />}
+              <TabsContent value="overview" className="mt-6 space-y-6">
+                {contribution && <ContributionChart data={contribution} />}
+              </TabsContent>
 
-            {/* ROI + Spend vs Contribution side by side */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {roi && <RoiChart data={roi} />}
-              {contribution && <SpendVsContribution data={contribution} />}
-            </div>
+              <TabsContent value="channels" className="mt-6 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {roi && <RoiChart data={roi} />}
+                  {contribution && <SpendVsContribution data={contribution} />}
+                </div>
+              </TabsContent>
 
-            <Separator />
+              <TabsContent value="curves" className="mt-6 space-y-6">
+                {responseCurves && <ResponseCurves data={responseCurves} />}
+              </TabsContent>
 
-            {/* Response Curves - Required */}
-            {responseCurves && <ResponseCurves data={responseCurves} />}
-
-            <Separator />
-
-            {/* Summary Table */}
-            {contribution && <SummaryTable data={contribution} />}
+              <TabsContent value="details" className="mt-6 space-y-6">
+                {contribution && <SummaryTable data={contribution} />}
+              </TabsContent>
+            </Tabs>
           </>
         )}
       </main>

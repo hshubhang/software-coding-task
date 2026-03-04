@@ -35,7 +35,14 @@ export default function SignupPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.detail || "Signup failed");
+        const detail = data.detail;
+        if (typeof detail === "string") {
+          setError(detail);
+        } else if (Array.isArray(detail)) {
+          setError(detail.map((e: { msg: string }) => e.msg).join(", "));
+        } else {
+          setError("Signup failed");
+        }
         return;
       }
 

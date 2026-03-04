@@ -1,0 +1,23 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+.venv/
+
+# Build
+.next/
+dist/
+out/
+
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Screenshots
+*.png
