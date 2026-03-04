@@ -15,26 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-
-interface ContributionData {
-  contributions: {
-    channel: string;
-    incremental_revenue: number;
-    spend: number;
-    spend_pct: number;
-    contribution_pct: number;
-    roi: number;
-    cpm: number;
-  }[];
-  baseline: number;
-  total_revenue: number;
-}
-
-function formatCurrency(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
-}
+import { formatCurrency } from "@/lib/format";
+import type { ContributionData } from "@/lib/types";
 
 export function SummaryTable({ data }: { data: ContributionData }) {
   const sorted = [...data.contributions].sort(

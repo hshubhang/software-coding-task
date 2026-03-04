@@ -21,36 +21,9 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
-
-interface ContributionData {
-  contributions: {
-    channel: string;
-    incremental_revenue: number;
-    spend: number;
-    spend_pct: number;
-    contribution_pct: number;
-    roi: number;
-  }[];
-  baseline: number;
-  total_revenue: number;
-}
-
-const COLORS = [
-  "hsl(221, 83%, 53%)",
-  "hsl(142, 71%, 45%)",
-  "hsl(38, 92%, 50%)",
-  "hsl(280, 65%, 60%)",
-  "hsl(340, 75%, 55%)",
-  "hsl(190, 80%, 45%)",
-  "hsl(10, 80%, 55%)",
-  "hsl(160, 60%, 45%)",
-];
-
-function formatCurrency(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
-}
+import { formatCurrency } from "@/lib/format";
+import { CHART_COLORS } from "@/lib/constants";
+import type { ContributionData } from "@/lib/types";
 
 export function ContributionChart({ data }: { data: ContributionData }) {
   const chartData = data.contributions
@@ -64,7 +37,7 @@ export function ContributionChart({ data }: { data: ContributionData }) {
   const chartConfig = Object.fromEntries(
     chartData.map((c, i) => [
       c.channel,
-      { label: c.channel, color: COLORS[i % COLORS.length] },
+      { label: c.channel, color: CHART_COLORS[i % CHART_COLORS.length] },
     ])
   );
 
@@ -94,7 +67,7 @@ export function ContributionChart({ data }: { data: ContributionData }) {
             />
             <Bar dataKey="revenue" radius={[0, 4, 4, 0]}>
               {chartData.map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
               ))}
             </Bar>
           </BarChart>

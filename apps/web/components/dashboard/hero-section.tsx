@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+import { formatCurrency } from "@/lib/format";
 
 interface SummaryData {
   total_spend: number;
@@ -13,12 +14,6 @@ interface SummaryData {
   media_driven_pct: number;
   time_range: { start: string; end: string; weeks: number };
   channels: string[];
-}
-
-function formatCurrency(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
 }
 
 export function HeroSection({ data }: { data: SummaryData }) {

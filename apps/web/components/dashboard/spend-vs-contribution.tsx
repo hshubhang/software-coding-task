@@ -20,14 +20,7 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
-
-interface ContributionData {
-  contributions: {
-    channel: string;
-    spend_pct: number;
-    contribution_pct: number;
-  }[];
-}
+import type { ContributionData } from "@/lib/types";
 
 export function SpendVsContribution({ data }: { data: ContributionData }) {
   const chartData = data.contributions

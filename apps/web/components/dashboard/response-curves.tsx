@@ -19,6 +19,8 @@ import {
 } from "@workspace/ui/components/card";
 import { ChartContainer } from "@workspace/ui/components/chart";
 import { Badge } from "@workspace/ui/components/badge";
+import { formatCurrency } from "@/lib/format";
+import { CHART_COLORS } from "@/lib/constants";
 
 interface ResponseCurvesData {
   curves: {
@@ -28,25 +30,6 @@ interface ResponseCurvesData {
     response_points: number[];
     marginal_roi?: number;
   }[];
-}
-
-const COLORS = [
-  "hsl(221, 83%, 53%)",
-  "hsl(142, 71%, 45%)",
-  "hsl(38, 92%, 50%)",
-  "hsl(280, 65%, 60%)",
-  "hsl(340, 75%, 55%)",
-  "hsl(190, 80%, 45%)",
-  "hsl(10, 80%, 55%)",
-  "hsl(160, 60%, 45%)",
-];
-
-function formatCurrency(value: number | string): string {
-  const v = Number(value);
-  if (isNaN(v)) return String(value);
-  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
-  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
-  return `$${v.toFixed(0)}`;
 }
 
 export function ResponseCurves({ data }: { data: ResponseCurvesData }) {
@@ -62,7 +45,7 @@ export function ResponseCurves({ data }: { data: ResponseCurvesData }) {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {data.curves.map((curve, idx) => {
-            const color = COLORS[idx % COLORS.length];
+            const color = CHART_COLORS[idx % CHART_COLORS.length];
 
             // Split into observed (solid) and projected (dotted) at current spend
             // Both series include the current spend point so they connect seamlessly
@@ -159,7 +142,7 @@ export function ResponseCurves({ data }: { data: ResponseCurvesData }) {
                       x={curve.current_spend}
                       y={currentResponse}
                       r={5}
-                      fill={COLORS[idx % COLORS.length]}
+                      fill={color}
                       stroke="white"
                       strokeWidth={2}
                     />

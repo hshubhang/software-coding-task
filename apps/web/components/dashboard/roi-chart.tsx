@@ -22,6 +22,7 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
+import { CHART_COLORS } from "@/lib/constants";
 
 interface RoiData {
   channels: {
@@ -32,17 +33,6 @@ interface RoiData {
     ci_upper: number;
   }[];
 }
-
-const COLORS = [
-  "hsl(221, 83%, 53%)",
-  "hsl(142, 71%, 45%)",
-  "hsl(38, 92%, 50%)",
-  "hsl(280, 65%, 60%)",
-  "hsl(340, 75%, 55%)",
-  "hsl(190, 80%, 45%)",
-  "hsl(10, 80%, 55%)",
-  "hsl(160, 60%, 45%)",
-];
 
 export function RoiChart({ data }: { data: RoiData }) {
   const chartData = data.channels
@@ -59,7 +49,7 @@ export function RoiChart({ data }: { data: RoiData }) {
   const chartConfig = Object.fromEntries(
     chartData.map((c, i) => [
       c.channel,
-      { label: c.channel, color: COLORS[i % COLORS.length] },
+      { label: c.channel, color: CHART_COLORS[i % CHART_COLORS.length] },
     ])
   );
 
