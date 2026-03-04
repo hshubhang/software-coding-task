@@ -88,13 +88,17 @@ def extract_contribution(m) -> dict:
 
 
 def extract_response_curves(m) -> dict:
-    """Extract response curve data using Analyzer.response_curves()."""
+    """Extract response curve data using Analyzer.response_curves() and marginal_roi()."""
     a = _get_analyzer(m)
     multipliers = [round(x, 2) for x in np.linspace(0, 2.5, 30).tolist()]
     rc = a.response_curves(spend_multipliers=multipliers)
 
     channels = list(rc.coords["channel"].values)
     spend_data = m.input_data.media_spend.values[0]  # (74, 8)
+
+    # Get marginal ROI at current spend (mean across chains and draws)
+    mroi_tensor = a.marginal_roi()  # (n_chains, n_draws, n_channels)
+    mroi_mean = mroi_tensor.numpy().mean(axis=(0, 1))  # (n_channels,)
 
     curves = []
     for i, ch in enumerate(channels):
@@ -107,6 +111,7 @@ def extract_response_curves(m) -> dict:
             "current_spend": total_spend,
             "spend_points": spend_points,
             "response_points": response_points,
+            "marginal_roi": float(mroi_mean[i]),
         })
 
     return {"curves": curves}
