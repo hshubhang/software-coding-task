@@ -42,3 +42,5 @@ def get_response_curves(user: User = Depends(get_current_user), db: Session = De
 @router.get("/spend")
 def get_spend(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return _get_data(user, "spend", db)
+
+

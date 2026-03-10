@@ -15,6 +15,8 @@ import { ResponseCurves } from "@/components/dashboard/response-curves";
 import { SpendVsContribution } from "@/components/dashboard/spend-vs-contribution";
 import { SummaryTable } from "@/components/dashboard/summary-table";
 import { ChatPanel } from "@/components/dashboard/chat-panel";
+import { SpendTrends } from "@/components/dashboard/spend-trends";
+
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -37,7 +39,6 @@ export default function DashboardPage() {
       ci_upper: number;
     }[];
   }>("/api/dashboard/roi");
-
   const { data: contribution, loading: contribLoading } = useDashboardData<{
     contributions: {
       channel: string;
@@ -61,6 +62,11 @@ export default function DashboardPage() {
     }[];
   }>("/api/dashboard/response-curves");
 
+  const { data: spend, loading: spendLoading } = useDashboardData<{
+    channels: string[];
+    weekly_data: Record<string, number | string>[];
+  }>("/api/dashboard/spend");
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push("/login");
@@ -74,9 +80,9 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  const dataLoading = summaryLoading || roiLoading || contribLoading || curvesLoading;
-
+  
+  const dataLoading = summaryLoading || roiLoading || contribLoading || curvesLoading || spendLoading;
+  
   return (
     <div className="min-h-svh bg-background">
       <header className="border-b">
@@ -124,6 +130,7 @@ export default function DashboardPage() {
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="channels">Channel Analysis</TabsTrigger>
                 <TabsTrigger value="curves">Response Curves</TabsTrigger>
+                <TabsTrigger value="trends">Trends</TabsTrigger>
                 <TabsTrigger value="details">Details</TabsTrigger>
               </TabsList>
 
@@ -140,6 +147,10 @@ export default function DashboardPage() {
 
               <TabsContent value="curves" className="mt-6 space-y-6">
                 {responseCurves && <ResponseCurves data={responseCurves} />}
+              </TabsContent>
+
+              <TabsContent value="trends" className="mt-6 space-y-6">
+                {spend && <SpendTrends data={spend} />}
               </TabsContent>
 
               <TabsContent value="details" className="mt-6 space-y-6">
